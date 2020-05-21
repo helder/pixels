@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "postinstall": "lix download",
+    "test": "cross-env ANSICON=true haxe tests.hxml"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "lix": "^15.9.0"
+  }
+}
