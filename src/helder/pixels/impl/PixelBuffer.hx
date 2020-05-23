@@ -5,7 +5,7 @@ import helder.Pixels;
 
 enum PixelFormat {
   ARGB;
-	RGBA;
+  RGBA;
   BGRA;
 }
 
