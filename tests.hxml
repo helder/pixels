@@ -1,6 +1,6 @@
 -lib helder.pixels
 -lib tink_unittest
--D analyzer_optimize
+#-D analyzer_optimize
 -dce full
 -main tests.Run
 # --interp

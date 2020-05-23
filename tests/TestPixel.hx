@@ -20,6 +20,13 @@ class TestPixel {
     asserts.assert(ref.toRGBA().hex(8).toLowerCase() == '2266bbaa');
     asserts.assert(ref.toBGRA().hex(8).toLowerCase() == 'bb6622aa');
     asserts.assert(ref.toA7RGB().hex(8).toLowerCase() == '552266bb');
+
+    final blank: Pixel = 0x000000;
+    asserts.assert(blank.withA(0xff).toString() == 'ff000000');
+    asserts.assert(blank.withR(0xff).toString() == '00ff0000');
+    asserts.assert(blank.withG(0xff).toString() == '0000ff00');
+    asserts.assert(blank.withB(0xff).toString() == '000000ff');
+
     return asserts.done();
   }
 }

@@ -1,0 +1,4 @@
+# @install: lix --silent download "haxelib:/iterators#1.2.2" into iterators/1.2.2/haxelib
+-lib exception
+-cp ${HAXE_LIBCACHE}/iterators/1.2.2/haxelib/src
+-D iterators=1.2.2

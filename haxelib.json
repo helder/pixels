@@ -1,5 +1,5 @@
 {
-	"name": "helder.slugs",
+	"name": "helder.pixels",
 	"license": "MIT",
 	"tags": ["cross"],
 	"classPath": "src",
@@ -7,8 +7,6 @@
 	"contributors": ["benmerckx"],
 	"releasenote": "Initial",
 	"version": "0.0.0",
-	"url": "https://github.com/helder/slugs",
-	"dependencies": {
-		"helder.set": ""
-	}
+	"url": "https://github.com/helder/pixels",
+	"dependencies": {}
 }

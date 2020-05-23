@@ -8,8 +8,11 @@ abstract Pixel(Int) to Int {
   inline function new(value: Int)
     this = value;
 
-  inline public static function create(a:Int, r:Int, g:Int, b:Int)
+  inline public static function create(r:Int, g:Int, b:Int, a:Int)
     return new Pixel(((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | b);
+
+  inline static public function fcreate(r:Float, g:Float, b:Float, a:Float):Pixel
+    return create(Std.int(a * 255.), Std.int(r * 255.), Std.int(g * 255.), Std.int(b * 255.));
 
   @:from
   inline public static function fromARGB(value: Int)
@@ -27,7 +30,7 @@ abstract Pixel(Int) to Int {
     );
 
   inline public static function fromA7RGB(value: Int) {
-    final pixel = new Pixel((value & 0xffffff) | ((value & 0xff000000) << 1));
+    final pixel = new Pixel((value & 0xffffff) | ((value & 0x7f000000) << 1));
     if (pixel.a > 0) pixel.a += 1;
     return pixel;
   }
@@ -42,42 +45,78 @@ abstract Pixel(Int) to Int {
     return (b << 24) | (g << 16) | (r << 8) | a;
 
   inline public function toA7RGB(): Int
-    return (this & 0x00ffffff) | (a << 23);
+    return (this & 0x00ffffff) | ((a >> 1) << 24);
 
   inline public function toString()
     return StringTools.hex(this, 8).toLowerCase();
+
+  inline public function cie(): Float
+    return 0.5126 * b + 0.7152 * g + 0.0722 * r;
+
+  inline public function saturation(): Float {
+    final maximum = Math.max(Math.max(r / 255, g / 255), b / 255);
+    final minimum = Math.min(Math.min(r / 255, g / 255), b / 255);
+    if (maximum == minimum) return 0;
+    final l = (maximum + minimum) / 2;
+    final d = maximum - minimum;
+    return if (l > 0.5) d / (2 - maximum - minimum) else d / (maximum + minimum);
+  }
+
+  inline public function readChannel(channel: Channel)
+    return switch channel {
+      case A: a;
+      case R: r;
+      case G: g;
+      case B: b;
+    }
+
+  inline public function withChannel(channel: Channel, value: Int)
+    return switch channel {
+      case A: withA(value);
+      case R: withR(value);
+      case G: withG(value);
+      case B: withB(value);
+    }
   
   public var a(get, set): Int;
-  inline private function get_a(): Int
+  inline function get_a(): Int
     return (this >> 24) & 0xFF;
-  inline private function set_a(a: Int): Int {
+  inline function set_a(a: Int): Int {
     this = (this & 0x00FFFFFF) | (a << 24);
     return a;
   }
+  inline public function withA(a: Int): Pixel
+    return create(r, g, b, a);
 
   public var r(get, set): Int;
-  inline private function get_r(): Int
+  inline function get_r(): Int
     return (this >> 16) & 0xFF;
-  inline private function set_r(r: Int): Int {
+  inline function set_r(r: Int): Int {
     this = (this & 0x00FFFFFF) | (r << 16);
     return r;
   }
+  inline public function withR(r: Int): Pixel
+    return create(r, g, b, a);
 
   public var g(get, set): Int;
-  inline private function get_g(): Int
+  inline function get_g(): Int
     return (this >> 8) & 0xFF;
-  inline private function set_g(g: Int): Int {
+  inline function set_g(g: Int): Int {
     this = (this & 0xFF00FFFF) | (g << 8);
     return g;
   }
+  inline public function withG(g: Int): Pixel
+    return create(r, g, b, a);
 
   public var b(get, set): Int;
-  inline private function get_b(): Int
+  inline function get_b(): Int
     return this & 0xFF;
-  inline private function set_b(b: Int): Int {
+  inline function set_b(b: Int): Int {
     this = (this & 0xFFFFFF00) | b;
     return b;
   }
+  inline public function withB(b: Int): Pixel
+    return create(r, g, b, a);
 
   @:op(-A) function negate():Pixel;
   @:op(++A) function preIncrement():Pixel;
