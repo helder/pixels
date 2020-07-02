@@ -1,6 +1,5 @@
 package tests;
 
-import helder.pixels.impl.GDPixels;
 import helder.Pixels;
 import helder.pixels.SmartCrop.suggestCrop;
 
@@ -12,12 +11,12 @@ class TestSmartCrop {
 
   public function testSmartCrop() {
     final result = suggestCrop(pixels, {
-      debug: true,
+      //debug: true,
       width: 100, 
       height: 100
     });
-    trace(result);
-    GDPixels.saveFile(result.debugOutput, 'output.png');
+    trace(result.topCrop);
+    //helder.pixels.impl.GDPixels.saveFile(result.debugOutput, 'output.png');
     return asserts.done();
   }
 }

@@ -11,8 +11,8 @@ abstract Pixel(Int) to Int {
   inline public static function create(r:Int, g:Int, b:Int, a:Int)
     return new Pixel(((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | b);
 
-  inline static public function fcreate(r:Float, g:Float, b:Float, a:Float):Pixel
-    return create(Std.int(a * 255.), Std.int(r * 255.), Std.int(g * 255.), Std.int(b * 255.));
+  inline static public function createFromFloats(r:Float, g:Float, b:Float, a:Float):Pixel
+    return create(Std.int(r), Std.int(g), Std.int(b), Std.int(a));
 
   @:from
   inline public static function fromARGB(value: Int)

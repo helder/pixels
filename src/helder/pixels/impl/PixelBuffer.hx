@@ -1,5 +1,7 @@
 package helder.pixels.impl;
 
+import helder.pixels.Resampler.BilinearKernel;
+import helder.pixels.Resampler.LanczosKernel;
 import haxe.io.Bytes;
 import helder.Pixels;
 
@@ -112,8 +114,11 @@ private class PixelBufferImpl implements PixelsImpl {
   public function clone(): Pixels
     throw 'abstract';
 
-  public function resample(width: Int, height: Int): Pixels
-    throw 'todo';
+  public function resample(width: Int, height: Int): Pixels {
+    final resampler = new Resampler(new LanczosKernel());
+    // Todo: deal with ratio and cropping
+    return resampler.scale(this, width / this.width);
+  }
 
   function position(x: Int, y: Int)
     return (y * width + x) << 2;

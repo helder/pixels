@@ -258,7 +258,7 @@ function downSample(input: Pixels, factor: Int) {
       // this is some funky magic to preserve detail a bit more for
       // skin (r) and detail (g). Saturation (b) does not get this boost.
       output.set(x, y, 
-        Pixel.fcreate(
+        Pixel.createFromFloats(
           r * ifactor2 * 0.5 + mr * 0.5,
           g * ifactor2 * 0.7 + mg * 0.3,
           b * ifactor2,

@@ -23,8 +23,14 @@ class TestDriver {
     asserts.assert(pixels.get(4, 2).toString() == '7fffffff');
 
     pixels.set(0, 0, 0xeeeeee);
-
     asserts.assert(pixels.get(0, 0).toString() == '00eeeeee');
+
+    pixels.set(0, 0, 0xaeffea26);
+    asserts.assert(pixels.get(0, 0).toString() == 'aeffea26');
+    asserts.assert(pixels.get(0, 0).a == 0xae);
+    asserts.assert(pixels.get(0, 0).r == 0xff);
+    asserts.assert(pixels.get(0, 0).g == 0xea);
+    asserts.assert(pixels.get(0, 0).b == 0x26);
 
     return asserts.done();
   }

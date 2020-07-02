@@ -1,0 +1,16 @@
+{
+  "wrapping": {
+    "maxLineLength": 80,
+    "casePattern": {
+      "defaultWrap": "onePerLineAfterFirst",
+      "defaultLocation": "beforeLast"
+    }
+  },
+  "indentation": {
+    "tabWidth": 2,
+    "character": "  "
+  },
+  "whitespace": {
+    "typeHintColonPolicy": "onlyAfter"
+  }
+}
