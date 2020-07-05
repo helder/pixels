@@ -1,8 +1,8 @@
 package helder.pixels.impl;
 
-#if format
 import haxe.io.Path;
 
+@:require('format')
 class ImageLoader {
 
   #if (sys || nodejs)
@@ -47,4 +47,3 @@ class ImageLoader {
     );
   }
 }
-#end

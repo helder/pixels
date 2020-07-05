@@ -1,15 +1,6 @@
 -lib helder.pixels
 -lib tink_unittest
 -lib format
-#-D analyzer_optimize
+-D analyzer_optimize
 -dce full
 -main tests.Run
-# --interp
-
-# -lib hxnodejs
-# -js bin/tests.js
-# -cmd node bin/tests.js
-
-
--php bin/php
--cmd php bin/php/index.php

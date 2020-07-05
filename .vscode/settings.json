@@ -1,0 +1,6 @@
+{
+  "haxe.configurations": [
+    [".vscode/node.hxml"],
+    [".vscode/php.hxml"]
+  ]
+}

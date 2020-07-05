@@ -1,7 +1,7 @@
 {
   "scripts": {
     "postinstall": "lix download",
-    "test": "cross-env ANSICON=true haxe tests.hxml"
+    "test": "cross-env ANSICON=true lix run travix run"
   },
   "devDependencies": {
     "cross-env": "^7.0.2",

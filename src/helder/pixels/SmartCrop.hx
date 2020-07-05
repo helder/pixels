@@ -2,6 +2,7 @@ package helder.pixels;
 
 // Port of https://github.com/jwagner/smartcrop.js/blob/6c8ffbdc007350081bf1f543149caced6c237501/smartcrop.js
 // Which is copyright (c) 2016 Jonas Wagner
+// Note: boosts are currently not available
 
 import helder.Pixels;
 import Math.*;
