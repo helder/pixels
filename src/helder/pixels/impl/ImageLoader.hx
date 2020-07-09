@@ -1,6 +1,7 @@
 package helder.pixels.impl;
 
 import haxe.io.Path;
+import helder.pixels.PixelFormat;
 
 @:require('format')
 class ImageLoader {
@@ -19,6 +20,20 @@ class ImageLoader {
       case extension: throw 'Extension "$extension" not supported';
     }
   }
+
+  public static function saveFile(pixels: Pixels, file: String, quality = 96) {
+    switch Path.extension(file).toLowerCase() {
+      case 'png':
+        final output = sys.io.File.write(file);
+        final writer = new format.png.Writer(output);
+        writer.write(format.png.Tools.build32ARGB(
+          pixels.width,
+          pixels.height,
+          pixels.toBytes(BGRA.transparent())
+        ));
+      case extension: throw 'Extension "$extension" not supported';
+    }
+  }
   #end
 
   static function fromJpegData(bytes: haxe.io.Bytes) {
@@ -26,7 +41,7 @@ class ImageLoader {
     return Pixels.createBuffer(
       data.width,
       data.height,
-      ARGB,
+      BGRA,
       data.pixels
     );
   }
@@ -42,7 +57,7 @@ class ImageLoader {
     return Pixels.createBuffer(
       header.width,
       header.height,
-      ARGB,
+      ARGB.transparent(),
       bytes
     );
   }

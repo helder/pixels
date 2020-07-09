@@ -16,7 +16,7 @@ class TestResampler {
       Math.round(buffer.width * .5),
       Math.round(buffer.height * .5)
     );
-    // helder.pixels.impl.GDPixels.saveFile(result, 'output.png');
+    helder.pixels.impl.GDPixels.saveFile(result, 'output.png');
     return asserts.done();
   }
 }

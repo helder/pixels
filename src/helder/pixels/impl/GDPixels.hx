@@ -89,7 +89,7 @@ class GDPixels implements PixelsImpl {
       if (!Std.is(pixels, GDPixels)) 
         pixels.copyTo(create(pixels.width, pixels.height))
       else pixels;
-    switch Path.extension(file) {
+    switch Path.extension(file).toLowerCase() {
       case 'png': GD.imagepng((cast output: GDPixels).image, file, 9);
       case 'jpg' | 'jpeg': GD.imagejpeg((cast output: GDPixels).image, file, quality);
       case 'bmp': GD.imagebmp((cast output: GDPixels).image, file);

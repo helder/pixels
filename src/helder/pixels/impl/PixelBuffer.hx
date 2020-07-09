@@ -2,14 +2,9 @@ package helder.pixels.impl;
 
 import helder.pixels.Resampler.BilinearKernel;
 import helder.pixels.Resampler.LanczosKernel;
+import helder.pixels.PixelFormat;
 import haxe.io.Bytes;
 import helder.Pixels;
-
-enum PixelFormat {
-  ARGB;
-  RGBA;
-  BGRA;
-}
 
 class PixelBuffer {
   public static function create(
@@ -17,9 +12,9 @@ class PixelBuffer {
     ?format: PixelFormat, ?bytes: Bytes
   ): Pixels
     return switch format {
-      case null | ARGB: new ARGBPixelBuffer(width, height, bytes);
-      case RGBA: new RGBAPixelBuffer(width, height, bytes);
-      case BGRA: new BGRAPixelBuffer(width, height, bytes);
+      case null | {order: ARGB}: new ARGBPixelBuffer(width, height, bytes);
+      case {order: RGBA}: new RGBAPixelBuffer(width, height, bytes);
+      case {order: BGRA}: new BGRAPixelBuffer(width, height, bytes);
     }
 }
 
@@ -35,10 +30,10 @@ class ARGBPixelBuffer extends PixelBufferImpl {
 
   override function offsetChannel(channel: Channel)
     return switch channel {
-      case B: 0;
-      case G: 1;
-      case R: 2;
       case A: 3;
+      case R: 2;
+      case G: 1;
+      case B: 0;
     }
 }
 
@@ -80,6 +75,7 @@ class BGRAPixelBuffer extends PixelBufferImpl {
     }
 }
 
+@:allow(helder.Pixels)
 private class PixelBufferImpl implements PixelsImpl {
   final bytes: Bytes;
   final width: Int;

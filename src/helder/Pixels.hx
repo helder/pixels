@@ -1,5 +1,6 @@
 package helder;
 
+import helder.pixels.PixelFormat;
 import haxe.io.Bytes;
 import helder.pixels.impl.PixelBuffer;
 import helder.pixels.Channel;
@@ -57,6 +58,21 @@ abstract Pixels(PixelsImpl) from PixelsImpl {
     ?format: PixelFormat, ?bytes: Bytes
   ): Pixels
     return PixelBuffer.create(width, height, format, bytes);
+
+  public function toBytes(format: PixelFormat): Bytes {
+    return switch format.order {
+      case RGBA if ((this is RGBAPixelBuffer)): 
+        return (cast this: RGBAPixelBuffer).bytes;
+      case ARGB if ((this is ARGBPixelBuffer)): 
+        return (cast this: ARGBPixelBuffer).bytes;
+      case BGRA if ((this is BGRAPixelBuffer)): 
+        return (cast this: BGRAPixelBuffer).bytes;
+      default: 
+        final buffer = createBuffer(width, height, format);
+        copyTo(buffer);
+        return buffer.toBytes(format);
+    }
+  }
 }
 
 interface PixelsImpl {
