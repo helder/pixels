@@ -9,7 +9,7 @@ class TestSmartCrop {
   public function new(pixels)
     this.pixels = pixels;
 
-  @:include public function testSmartCrop() {
+  public function testSmartCrop() {
     final result = suggestCrop(pixels, {
       debug: true,
       width: 100,

@@ -40,7 +40,7 @@ typedef SmartCropOptions = {
   ?debug:Bool
 }
 
-final defaults = {
+final defaults: SmartCropOptions = {
   width: 0,
   height: 0,
   aspect: 0,
@@ -110,28 +110,26 @@ function suggestCrop(pixels:Pixels, cropOptions:SmartCropOptions): CropSuggestio
   var prescale = 1.;
 
   // calculate desired crop dimensions based on the image size
-  if (options.width != null && options.height != null) {
-    scale = min(
-      pixels.width / options.width, 
-      pixels.height / options.height
-    );
-    options.cropWidth = int(options.width * scale);
-    options.cropHeight = int(options.height * scale);
-    // Img = 100x100, width = 95x95, scale = 100/95, 1/scale > min
-    // don't set minscale smaller than 1/scale
-    // -> don't pick crops that need upscaling
-    options.minScale = min(options.maxScale, max(1 / scale, options.minScale));
+  scale = min(
+    pixels.width / options.width, 
+    pixels.height / options.height
+  );
+  options.cropWidth = int(options.width * scale);
+  options.cropHeight = int(options.height * scale);
+  // Img = 100x100, width = 95x95, scale = 100/95, 1/scale > min
+  // don't set minscale smaller than 1/scale
+  // -> don't pick crops that need upscaling
+  options.minScale = min(options.maxScale, max(1 / scale, options.minScale));
 
-    // prescale if possible
-    if (options.prescale != false) {
-      prescale = min(max(256 / pixels.width, 256 / pixels.height), 1);
-      if (prescale < 1) {
-        pixels = pixels.resample(prescale);
-        options.cropWidth = int(options.cropWidth * prescale);
-        options.cropHeight = int(options.cropHeight * prescale);
-      } else {
-        prescale = 1;
-      }
+  // prescale if possible
+  if (options.prescale != false) {
+    prescale = min(max(256 / pixels.width, 256 / pixels.height), 1);
+    if (prescale < 1) {
+      pixels = pixels.resample(prescale);
+      options.cropWidth = int(options.cropWidth * prescale);
+      options.cropHeight = int(options.cropHeight * prescale);
+    } else {
+      prescale = 1;
     }
   }
 
