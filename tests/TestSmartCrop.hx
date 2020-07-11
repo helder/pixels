@@ -18,7 +18,7 @@ class TestSmartCrop {
     final top = result.topCrop;
     asserts.assert(top.x == 11 && top.y == 0);
     asserts.assert(top.width == 379 && top.height == 379);
-    helder.pixels.impl.ImageLoader.saveFile(result.debugOutput, 'bin/smartcrop.png');
+    //helder.pixels.impl.ImageLoader.saveFile(result.debugOutput, 'bin/smartcrop.png');
     return asserts.done();
   }
 }

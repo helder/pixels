@@ -19,10 +19,10 @@ jobs:
           - interp
           - node
           - neko
-          - python
+          # - python
           - php
           - cpp
-          - java -D jvm
+          # - java -D jvm
 
     steps:
     - uses: actions/checkout@v2
