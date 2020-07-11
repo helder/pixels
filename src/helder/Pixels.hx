@@ -57,20 +57,15 @@ abstract Pixels(PixelsImpl) from PixelsImpl {
     width: Int, height: Int, 
     ?format: PixelFormat, ?bytes: Bytes
   ): Pixels
-    return PixelBuffer.create(width, height, format, bytes);
+    return new PixelBuffer(width, height, format, bytes);
 
   public function toBytes(format: PixelFormat): Bytes {
-    return switch format.order {
-      case RGBA if ((this is RGBAPixelBuffer)): 
-        return (cast this: RGBAPixelBuffer).bytes;
-      case ARGB if ((this is ARGBPixelBuffer)): 
-        return (cast this: ARGBPixelBuffer).bytes;
-      case BGRA if ((this is BGRAPixelBuffer)): 
-        return (cast this: BGRAPixelBuffer).bytes;
-      default: 
-        final buffer = createBuffer(width, height, format);
-        copyTo(buffer);
-        return buffer.toBytes(format);
+    return if ((this is PixelBuffer) && format.equals((cast this: PixelBuffer).format)) {
+      (cast this: PixelBuffer).bytes;
+    } else {
+      final buffer = createBuffer(width, height, format);
+      copyTo(buffer);
+      return buffer.toBytes(format);
     }
   }
 }
@@ -83,7 +78,7 @@ interface PixelsImpl {
   function getChannel(channel: Channel, x: Int, y: Int): Int;
   function setChannel(channel: Channel, x: Int, y: Int, value: Int): Void;
   function clone(): Pixels;
-  function resample(width: Int, height: Int): Pixels;
+  function resample(ratio: Float): Pixels;
 }
 
 typedef Pixel = helder.pixels.Pixel;

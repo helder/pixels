@@ -22,10 +22,10 @@ class TestDriver {
     asserts.assert(pixels.get(3, 2).toString() == '7f000000');
     asserts.assert(pixels.get(4, 2).toString() == '7fffffff');
 
-    pixels.set(0, 0, 0xeeeeee);
+    pixels.set(0, 0, Pixel.fromARGB(0xeeeeee));
     asserts.assert(pixels.get(0, 0).toString() == '00eeeeee');
 
-    pixels.set(0, 0, 0xaeffea26);
+    pixels.set(0, 0, Pixel.fromARGB(0xaeffea26));
     asserts.assert(pixels.get(0, 0).toString() == 'aeffea26');
     asserts.assert(pixels.get(0, 0).a == 0xae);
     asserts.assert(pixels.get(0, 0).r == 0xff);

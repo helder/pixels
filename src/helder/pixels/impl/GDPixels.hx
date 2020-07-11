@@ -33,11 +33,13 @@ class GDPixels implements PixelsImpl {
     set(x, y, pixel);
   }
 
-  public function resample(width: Int, height: Int): Pixels {
+  public function resample(ratio: Float): Pixels {
+    final width = Std.int(ratio * getWidth());
+    final height = Std.int(ratio * getHeight());    
     final destination = createImage(width, height, supportsAlpha);
     GD.imagecopyresampled(
       destination, image, 0, 0, 0, 0, 
-      width, height, this.getWidth(), this.getHeight()
+      width, height, getWidth(), getHeight()
     );
     return new GDPixels(destination, supportsAlpha);
   }

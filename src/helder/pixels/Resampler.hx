@@ -88,7 +88,7 @@ class Resampler {
   }
 
   function getColor(source: Pixels, values: Float32Array, x1b: Int, x1e: Int, y1b: Int, y1e: Int, w: Int,
-      total: Float): Int {
+      total: Float): Pixel {
     var i = 0;
 
     var r = .0;

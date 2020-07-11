@@ -11,12 +11,13 @@ class Run {
     // helder.pixels.impl.ImageLoader.saveFile(crop, 'output.png');
     Runner.run(TestBatch.make([
       new TestPixel(),
-      // new TestSmartCrop(helder.pixels.impl.ImageLoader.fromFile('tests/crop.png')),
-      new TestResampler(helder.pixels.impl.ImageLoader.fromFile('tests/crop.png')),
+      new TestFormat(),
       new TestDriver(colors),
       new TestDriver(colors.copyTo(
-        PixelBuffer.create(colors.width, colors.height)
+        new PixelBuffer(colors.width, colors.height)
       )),
+      new TestSmartCrop(helder.pixels.impl.ImageLoader.fromFile('tests/crop.png')),
+      //new TestResampler(helder.pixels.impl.GDPixels.fromFile('tests/crop.png')),
     ])).handle(Runner.exit);
   }
 }

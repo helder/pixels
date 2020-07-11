@@ -29,7 +29,7 @@ class ImageLoader {
         writer.write(format.png.Tools.build32ARGB(
           pixels.width,
           pixels.height,
-          pixels.toBytes(BGRA.transparent())
+          pixels.toBytes(ARGB.transparent())
         ));
       case extension: throw 'Extension "$extension" not supported';
     }
@@ -57,7 +57,7 @@ class ImageLoader {
     return Pixels.createBuffer(
       header.width,
       header.height,
-      ARGB.transparent(),
+      ARGB,
       bytes
     );
   }

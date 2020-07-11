@@ -88,7 +88,14 @@ typedef Score = {
   total:Float
 }
 
-function suggestCrop(pixels:Pixels, cropOptions:SmartCropOptions) {
+typedef CropSuggestion = {
+  topCrop: Crop,
+  ?crops: Array<Crop>,
+  ?debugOutput: Pixels,
+  ?debugOptions: SmartCropOptions
+} 
+
+function suggestCrop(pixels:Pixels, cropOptions:SmartCropOptions): CropSuggestion {
   final options = Reflect.copy(defaults);
 
   for (key in Reflect.fields(cropOptions))
@@ -119,10 +126,7 @@ function suggestCrop(pixels:Pixels, cropOptions:SmartCropOptions) {
     if (options.prescale != false) {
       prescale = min(max(256 / pixels.width, 256 / pixels.height), 1);
       if (prescale < 1) {
-        pixels = pixels.resample(
-          int(pixels.width * prescale), 
-          int(pixels.height * prescale)
-        );
+        pixels = pixels.resample(prescale);
         options.cropWidth = int(options.cropWidth * prescale);
         options.cropHeight = int(options.cropHeight * prescale);
       } else {

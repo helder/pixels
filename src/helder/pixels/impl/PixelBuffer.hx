@@ -1,11 +1,12 @@
 package helder.pixels.impl;
 
+import helder.pixels.Resampler.BicubicKernel;
 import helder.pixels.Resampler.BilinearKernel;
 import helder.pixels.Resampler.LanczosKernel;
 import helder.pixels.PixelFormat;
 import haxe.io.Bytes;
 import helder.Pixels;
-
+/*
 class PixelBuffer {
   public static function create(
     width: Int, height: Int, 
@@ -73,15 +74,17 @@ class BGRAPixelBuffer extends PixelBufferImpl {
       case G: 2;
       case B: 3;
     }
-}
+}*/
 
 @:allow(helder.Pixels)
-private class PixelBufferImpl implements PixelsImpl {
-  final bytes: Bytes;
+class PixelBuffer implements PixelsImpl {
   final width: Int;
   final height: Int;
+  final format: PixelFormat;
+  final bytes: Bytes;
 
-  inline public function new(width: Int, height: Int, ?bytes: Bytes) {
+  inline public function new(width: Int, height: Int, ?format: PixelFormat, ?bytes: Bytes) {
+    this.format = if (format == null) ARGB else format;
     this.bytes = 
       if (bytes == null) Bytes.alloc(width * height * 4) 
       else bytes;
@@ -96,31 +99,35 @@ private class PixelBufferImpl implements PixelsImpl {
     return height;
 
   public function get(x: Int, y: Int): Pixel
-    throw 'abstract';
+    return Pixel.ofFormat(format, bytes.getInt32(position(x, y)));
 
   public function set(x: Int, y: Int, pixel: Pixel): Void
-    throw 'abstract';
+    bytes.setInt32(position(x, y), pixel.toFormat(format));
 
+  // These can be optimized further later
   public function getChannel(channel: Channel, x: Int, y: Int): Int
-    return bytes.get(position(x, y) + offsetChannel(channel));
+    return get(x, y).readChannel(channel);
 
-  public function setChannel(channel: Channel, x: Int, y: Int, value: Int)
-    return bytes.set(position(x, y) + offsetChannel(channel), value);
+  public function setChannel(channel: Channel, x: Int, y: Int, value: Int) {
+    final current = get(x, y);
+    set(x, y, current.withChannel(channel, value));
+  }
 
   public function clone(): Pixels
-    throw 'abstract';
+    return new PixelBuffer(width, height, format, cloneBuffer());
 
-  public function resample(width: Int, height: Int): Pixels {
-    final resampler = new Resampler(new LanczosKernel());
-    // Todo: deal with ratio and cropping
-    return resampler.scale(this, width / this.width);
+  public function resample(ratio: Float): Pixels {
+    final resampler = new Resampler(new BilinearKernel());
+    return resampler.scale(this, ratio);
   }
 
   function position(x: Int, y: Int)
     return (y * width + x) << 2;
 
-  function offsetChannel(channel: Channel): Int
-    return channel;
+  /*function offsetChannel(channel: Channel): Int
+    return switch format.order {
+
+    }*/
 
   function cloneBuffer() {
     final clone = Bytes.alloc(bytes.length);

@@ -1,50 +1,75 @@
 package helder.pixels;
 
+import helder.pixels.PixelFormat.PixelOpacity;
+import haxe.Int32;
+
 // A lot of this comes straight from
 // https://github.com/azrafe7/hxPixels/blob/0a471d358490ec13586bb2bf9837bcff16a14045/src/hxPixels/Pixels.hx
 // Which is copyright (c) 2014 Giuseppe Di Mauro (azrafe7)
 
-abstract Pixel(Int) to Int {
-  inline function new(value: Int)
+abstract Pixel(Int32) to Int32 {
+  inline function new(value: Int32, opacity: PixelOpacity = ZeroOpaque) {
     this = value;
+    if (opacity == ZeroTransparent) a = (255 - a);
+  }
 
-  inline public static function create(r:Int, g:Int, b:Int, a:Int)
+  inline public static function create(r:Int32, g:Int32, b:Int32, a:Int32)
     return new Pixel(((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | b);
 
   inline static public function createFromFloats(r:Float, g:Float, b:Float, a:Float):Pixel
     return create(Std.int(r), Std.int(g), Std.int(b), Std.int(a));
 
-  @:from
-  inline public static function fromARGB(value: Int)
+  @:from 
+  inline public static function fromInt32(value: Int32)
     return new Pixel(value);
 
-  inline public static function fromRGBA(value: Int)
-    return new Pixel((value >>> 8) | ((value & 0xff) << 24));
+  inline public static function fromARGB(value: Int32, opacity: PixelOpacity = ZeroOpaque)
+    return new Pixel(value, opacity);
 
-  inline public static function fromBGRA(value: Int)
+  inline public static function fromRGBA(value: Int32, opacity: PixelOpacity = ZeroOpaque)
+    return new Pixel((value >>> 8) | ((value & 0xff) << 24), opacity);
+
+  inline public static function fromBGRA(value: Int32, opacity: PixelOpacity = ZeroOpaque)
     return new Pixel(
       (((value) & 0xff) << 24) |
       (((value >> 8) & 0xff) << 16) |
       (((value >> 16) & 0xff) << 8) |
-      ((value >> 24) & 0xff)
+      ((value >> 24) & 0xff), 
+      opacity
     );
 
-  inline public static function fromA7RGB(value: Int) {
+  inline public static function fromA7RGB(value: Int32) {
     final pixel = new Pixel((value & 0xffffff) | ((value & 0x7f000000) << 1));
     if (pixel.a > 0) pixel.a += 1;
     return pixel;
   }
 
-  inline public function toARGB(): Int
-    return this;
+  inline public static function ofFormat(format: PixelFormat, value: Int32)
+    return format.normalize(value);
 
-  inline public function toRGBA(): Int
-    return (this << 8) | a;
+  inline public function toFormat(format: PixelFormat)
+    return format.convert((cast this: Pixel));
 
-  inline public function toBGRA(): Int
-    return (b << 24) | (g << 16) | (r << 8) | a;
+  inline public function toARGB(opacity: PixelOpacity = ZeroOpaque): Int32
+    return  switch opacity {
+      case ZeroOpaque: this;
+      case ZeroTransparent: 
+        (0x00ffffff & this) | (255 - a);
+    }
 
-  inline public function toA7RGB(): Int
+  inline public function toRGBA(opacity: PixelOpacity = ZeroOpaque): Int32
+    return (this << 8) | switch opacity {
+      case ZeroOpaque: a;
+      case ZeroTransparent: (255 - a);
+    }
+
+  inline public function toBGRA(opacity: PixelOpacity = ZeroOpaque): Int32
+    return (b << 24) | (g << 16) | (r << 8) | switch opacity {
+      case ZeroOpaque: a;
+      case ZeroTransparent: (255 - a);
+    }
+
+  inline public function toA7RGB(): Int32
     return (this & 0x00ffffff) | ((a >> 1) << 24);
 
   inline public function toString()
@@ -70,7 +95,7 @@ abstract Pixel(Int) to Int {
       case B: b;
     }
 
-  inline public function withChannel(channel: Channel, value: Int)
+  inline public function withChannel(channel: Channel, value: Int32)
     return switch channel {
       case A: withA(value);
       case R: withR(value);
@@ -78,130 +103,51 @@ abstract Pixel(Int) to Int {
       case B: withB(value);
     }
   
-  public var a(get, set): Int;
-  inline function get_a(): Int
+  public var a(get, set): Int32;
+  inline function get_a(): Int32
     return (this >> 24) & 0xFF;
-  inline function set_a(a: Int): Int {
+  inline function set_a(a: Int32): Int32 {
     this = (this & 0x00FFFFFF) | (a << 24);
     return a;
   }
-  inline public function withA(a: Int): Pixel
+  inline public function withA(a: Int32): Pixel
     return create(r, g, b, a);
 
-  public var r(get, set): Int;
-  inline function get_r(): Int
+  public var r(get, set): Int32;
+  inline function get_r(): Int32
     return (this >> 16) & 0xFF;
-  inline function set_r(r: Int): Int {
+  inline function set_r(r: Int32): Int32 {
     this = (this & 0x00FFFFFF) | (r << 16);
     return r;
   }
-  inline public function withR(r: Int): Pixel
+  inline public function withR(r: Int32): Pixel
     return create(r, g, b, a);
 
-  public var g(get, set): Int;
-  inline function get_g(): Int
+  public var g(get, set): Int32;
+  inline function get_g(): Int32
     return (this >> 8) & 0xFF;
-  inline function set_g(g: Int): Int {
+  inline function set_g(g: Int32): Int32 {
     this = (this & 0xFF00FFFF) | (g << 8);
     return g;
   }
-  inline public function withG(g: Int): Pixel
+  inline public function withG(g: Int32): Pixel
     return create(r, g, b, a);
 
-  public var b(get, set): Int;
-  inline function get_b(): Int
+  public var b(get, set): Int32;
+  inline function get_b(): Int32
     return this & 0xFF;
-  inline function set_b(b: Int): Int {
+  inline function set_b(b: Int32): Int32 {
     this = (this & 0xFFFFFF00) | b;
     return b;
   }
-  inline public function withB(b: Int): Pixel
+  inline public function withB(b: Int32): Pixel
     return create(r, g, b, a);
 
-  @:op(-A) function negate():Pixel;
-  @:op(++A) function preIncrement():Pixel;
-  @:op(A++) function postIncrement():Pixel;
-  @:op(--A) function preDecrement():Pixel;
-  @:op(A--) function postDecrement():Pixel;
-
-  @:op(A + B) static function add(a:Pixel, b:Pixel):Pixel;
-  @:op(A + B) @:commutative static function addInt(a:Pixel, b:Int):Pixel;
-  @:op(A + B) @:commutative static function addFloat(a:Pixel, b:Float):Float;
-  @:op(A - B) static function sub(a:Pixel, b:Pixel):Pixel;
-  @:op(A - B) static function subInt(a:Pixel, b:Int):Pixel;
-  @:op(A - B) static function intSub(a:Int, b:Pixel):Pixel;
-  @:op(A - B) static function subFloat(a:Pixel, b:Float):Float;
-  @:op(A - B) static function floatSub(a:Float, b:Pixel):Float;
-  @:op(A * B) static function mul(a:Pixel, b:Pixel):Pixel;
-  @:op(A * B) @:commutative static function mulInt(a:Pixel, b:Int):Pixel;
-  @:op(A * B) static function mul(a:Pixel, b:Pixel):Pixel;
-  @:op(A * B) @:commutative static function mulInt(a:Pixel, b:Int):Pixel;
-  @:op(A * B) @:commutative static function mulFloat(a:Pixel, b:Float):Float;
-  @:op(A / B) static function div(a:Pixel, b:Pixel):Float;
-  @:op(A / B) static function divInt(a:Pixel, b:Int):Float;
-  @:op(A / B) static function intDiv(a:Int, b:Pixel):Float;
-  @:op(A / B) static function divFloat(a:Pixel, b:Float):Float;
-  @:op(A / B) static function floatDiv(a:Float, b:Pixel):Float;
-
-  @:op(A % B) static function mod(a:Pixel, b:Pixel):Pixel;
-  @:op(A % B) static function modInt(a:Pixel, b:Int):Int;
-  @:op(A % B) static function intMod(a:Int, b:Pixel):Int;
-  @:op(A % B) static function modFloat(a:Pixel, b:Float):Float;
-  @:op(A % B) static function floatMod(a:Float, b:Pixel):Float;
-
   @:op(A == B) static function eq(a:Pixel, b:Pixel):Bool;
-  @:op(A == B) @:commutative static function eqInt(a:Pixel, b:Int):Bool;
+  @:op(A == B) @:commutative static function eqInt(a:Pixel, b:Int32):Bool;
   @:op(A == B) @:commutative static function eqFloat(a:Pixel, b:Float):Bool;
 
   @:op(A != B) static function neq(a:Pixel, b:Pixel):Bool;
-  @:op(A != B) @:commutative static function neqInt(a:Pixel, b:Int):Bool;
+  @:op(A != B) @:commutative static function neqInt(a:Pixel, b:Int32):Bool;
   @:op(A != B) @:commutative static function neqFloat(a:Pixel, b:Float):Bool;
-
-  @:op(A < B) static function lt(a:Pixel, b:Pixel):Bool;
-  @:op(A < B) static function ltInt(a:Pixel, b:Int):Bool;
-  @:op(A < B) static function intLt(a:Int, b:Pixel):Bool;
-  @:op(A < B) static function ltFloat(a:Pixel, b:Float):Bool;
-  @:op(A < B) static function floatLt(a:Float, b:Pixel):Bool;
-
-  @:op(A <= B) static function lte(a:Pixel, b:Pixel):Bool;
-  @:op(A <= B) static function lteInt(a:Pixel, b:Int):Bool;
-  @:op(A <= B) static function intLte(a:Int, b:Pixel):Bool;
-  @:op(A <= B) static function lteFloat(a:Pixel, b:Float):Bool;
-  @:op(A <= B) static function floatLte(a:Float, b:Pixel):Bool;
-
-  @:op(A > B) static function gt(a:Pixel, b:Pixel):Bool;
-  @:op(A > B) static function gtInt(a:Pixel, b:Int):Bool;
-  @:op(A > B) static function intGt(a:Int, b:Pixel):Bool;
-  @:op(A > B) static function gtFloat(a:Pixel, b:Float):Bool;
-  @:op(A > B) static function floatGt(a:Float, b:Pixel):Bool;
-
-  @:op(A >= B) static function gte(a:Pixel, b:Pixel):Bool;
-  @:op(A >= B) static function gteInt(a:Pixel, b:Int):Bool;
-  @:op(A >= B) static function intGte(a:Int, b:Pixel):Bool;
-  @:op(A >= B) static function gteFloat(a:Pixel, b:Float):Bool;
-  @:op(A >= B) static function floatGte(a:Float, b:Pixel):Bool;
-
-  @:op(~A) function complement():Pixel;
-
-  @:op(A & B) static function and(a:Pixel, b:Pixel):Pixel;
-  @:op(A & B) @:commutative static function andInt(a:Pixel, b:Int):Pixel;
-
-  @:op(A | B) static function or(a:Pixel, b:Pixel):Pixel;
-  @:op(A | B) @:commutative static function orInt(a:Pixel, b:Int):Pixel;
-
-  @:op(A ^ B) static function xor(a:Pixel, b:Pixel):Pixel;
-  @:op(A ^ B) @:commutative static function xorInt(a:Pixel, b:Int):Pixel;
-
-
-  @:op(A >> B) static function shr(a:Pixel, b:Pixel):Pixel;
-  @:op(A >> B) static function shrInt(a:Pixel, b:Int):Pixel;
-  @:op(A >> B) static function intShr(a:Int, b:Pixel):Pixel;
-
-  @:op(A >>> B) static function ushr(a:Pixel, b:Pixel):Pixel;
-  @:op(A >>> B) static function ushrInt(a:Pixel, b:Int):Pixel;
-  @:op(A >>> B) static function intUshr(a:Int, b:Pixel):Pixel;
-
-  @:op(A << B) static function shl(a:Pixel, b:Pixel):Pixel;
-  @:op(A << B) static function shlInt(a:Pixel, b:Int):Pixel;
-  @:op(A << B) static function intShl(a:Int, b:Pixel):Pixel;
 }
