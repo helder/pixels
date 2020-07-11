@@ -60,7 +60,7 @@ abstract Pixels(PixelsImpl) from PixelsImpl {
     return new PixelBuffer(width, height, format, bytes);
 
   public function toBytes(format: PixelFormat): Bytes {
-    return if ((this is PixelBuffer) && format.equals((cast this: PixelBuffer).format)) {
+    return if (Std.isOfType(this, PixelBuffer) && format.equals((cast this: PixelBuffer).format)) {
       (cast this: PixelBuffer).bytes;
     } else {
       final buffer = createBuffer(width, height, format);
