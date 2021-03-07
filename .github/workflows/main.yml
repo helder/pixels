@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         haxe-version:
-          - d5ece16
+          - '4.2.1'
         target: 
           - interp
           - node
